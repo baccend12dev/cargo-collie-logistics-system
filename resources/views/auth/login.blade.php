@@ -17,6 +17,16 @@
     @if (file_exists(public_path('build/manifest.json')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
+        <script>
+            // Suppress Tailwind Play CDN production warning in console
+            (function() {
+                const _w = console.warn;
+                console.warn = function(...args) {
+                    if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
+                    _w.apply(console, args);
+                };
+            })();
+        </script>
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
             tailwind.config = {
