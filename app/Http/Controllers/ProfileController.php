@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
@@ -48,14 +49,31 @@ class ProfileController extends Controller
 
         // Proses Upload Foto Avatar Baru
         if ($request->hasFile('avatar')) {
-            // Hapus file lama jika ada di storage
-            if (!empty($user->avatar) && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
-            }
+            $file = $request->file('avatar');
+            if ($file->isValid()) {
+                $targetDir = public_path('storage/avatars');
+                if (!is_dir($targetDir)) {
+                    @mkdir($targetDir, 0777, true);
+                }
 
-            // Simpan foto baru ke direktori storage/app/public/avatars
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar = $path;
+                // Hapus file lama jika ada
+                if (!empty($user->avatar)) {
+                    $cleanOld = ltrim(str_replace('storage/', '', $user->avatar), '/');
+                    $oldPath = public_path('storage/' . $cleanOld);
+                    if (is_file($oldPath)) {
+                        @unlink($oldPath);
+                    }
+                    if (Storage::disk('public')->exists($cleanOld)) {
+                        Storage::disk('public')->delete($cleanOld);
+                    }
+                }
+
+                // Simpan foto baru ke public/storage/avatars
+                $filename = Str::random(40) . '.' . $file->getClientOriginalExtension();
+                $file->move($targetDir, $filename);
+
+                $user->avatar = 'avatars/' . $filename;
+            }
         }
 
         $user->save();
