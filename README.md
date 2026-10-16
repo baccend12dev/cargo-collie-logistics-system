@@ -1,66 +1,160 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Cargo & Collie Logistics Management System
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="300" alt="Laravel Logo">
 </p>
 
-## About Laravel
+<p align="center">
+  <img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel Version">
+  <img src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP Version">
+  <img src="https://img.shields.io/badge/PostgreSQL-16+-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License">
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📌 Tentang Sistem (Overview)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Cargo & Collie Logistics Management System** adalah aplikasi berbasis web modern yang dirancang untuk mengelola dan memonitor operasional logistik, pergudangan, pencatatan muatan koli (**Collie**), **Surat Muat (SM)**, **SPPB (Surat Perintah Pengeluaran Barang)**, serta pembuatan dokumen cetak resmi **Packing List**.
 
-## Learning Laravel
+Aplikasi ini merupakan hasil modernisasi dari sistem desktop legacy (*Visual Basic 6*) ke arsitektur web modern berbasis **Laravel 12 (PHP 8.2)** dan **PostgreSQL RDBMS**, memberikan aksesibilitas terpusat, keamanan terjamin, dan pemrosesan data pengiriman yang cepat serta akurat.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 🚀 Fitur Utama (Key Features)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Manajemen Collie & Muatan (Cargo Management)**
+  - Pengelolaan nomor kemasan / koli tunggal maupun rentang (*range*, contoh: `1-62`, `335-666`).
+  - Kalkulasi otomatis jumlah box (`QTY1 = JUCOL - AD + 1`).
+  - Kalkulasi total fisik barang (`QTY = QTY1 × QTY2`).
+  - Kalkulasi dan rekapitulasi berat kotor / neto barang (`QTYR`).
 
-## Laravel Sponsors
+- **SPPB & Surat Muat (SM) Dispatch**
+  - Pencatatan nomor SPPB, tanggal pengeluaran, ekspedisi/kurir, dan nomor polisi armada / nama pengemudi.
+  - Verifikasi dan monitoring status pengiriman barang dari gudang ke cabang atau distributor.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Cetak Dokumen Resmi Packing List**
+  - Tampilan siap cetak (*Print-Ready*) dengan format standar industri (sesuai formulir mutu perusahaan).
+  - Ringkasan total koli, total berat (KG), rincian nomor collie, nama barang, dan tanda tangan otorisasi.
 
-### Premium Partners
+- **Master Data & Referensi**
+  - Master Distributor / Customer.
+  - Master Ekspedisi & Jasa Pengiriman.
+  - Master Stok & Katalog Produk / Barang.
+  - Master Pengguna (Manajemen user, role, dan profil).
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **Dashboard & Analitik**
+  - Ringkasan transaksi harian dan bulanan.
+  - Status pengiriman, volume muatan koli, dan rekapitulasi pengiriman per cabang/wilayah.
 
-## Contributing
+- **Import & Export Data**
+  - Fitur import data lama (CSV/Excel) langsung via CLI Artisan Command (`import:collie-csv`).
+  - Ekspor laporan data muatan ke format spreadsheet.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🛠️ Tech Stack & Requirements
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- **Bahasa & Framework**: PHP >= 8.2, Laravel 12.x
+- **Basis Data**: PostgreSQL (atau MySQL 8.0+)
+- **Frontend**: Blade Templating, Vanilla CSS / Tailwind, JavaScript, Vite
+- **Web Server**: Apache / Nginx / Docker Engine
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## ⚙️ Panduan Instalasi (Installation Guide)
 
-## License
+Ikuti langkah-langkah berikut untuk menjalankan project di lingkungan lokal:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 1. Clone Repository
+```bash
+git clone https://github.com/baccend12dev/cargo-collie-logistics-system.git
+cd cargo-collie-logistics-system
+```
+
+### 2. Install Dependensi PHP & JavaScript
+```bash
+composer install
+npm install
+```
+
+### 3. Konfigurasi Environment (`.env`)
+Salin file konfigurasi environment dan sesuaikan koneksi database Anda:
+```bash
+cp .env.example .env
+```
+Sesuaikan pengaturan database pada `.env`:
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=cargo_collie
+DB_USERNAME=postgres
+DB_PASSWORD=your_password
+```
+
+### 4. Generate Application Key
+```bash
+php artisan key:generate
+```
+
+### 5. Jalankan Migrasi & Seeder Database
+```bash
+php artisan migrate --seed
+```
+
+### 6. Build Aset Frontend & Jalankan Server
+Buka dua terminal terpisah atau jalankan secara concurrent:
+
+**Terminal 1 (Vite Dev):**
+```bash
+npm run dev
+```
+
+**Terminal 2 (Laravel Dev Server):**
+```bash
+php artisan serve
+```
+
+Aplikasi siap diakses melalui browser di: `http://localhost:8000`
+
+---
+
+## 📐 Logika & Rumus Bisnis Utama
+
+| Variabel | Keterangan | Rumus / Ketentuan |
+| :--- | :--- | :--- |
+| `AD` | Nomor Urut Collie Awal | Integer (dimulai dari `1`) |
+| `JUCOL` | Nomor Urut Collie Akhir | Integer (`JUCOL >= AD`) |
+| `NO_COL` | Display Nomor Collie | `AD == JUCOL` $\rightarrow$ `"AD"`<br>`AD != JUCOL` $\rightarrow$ `"AD - JUCOL"` |
+| `QTY1` | Jumlah Kemasan / Box | $\text{JUCOL} - \text{AD} + 1$ |
+| `QTY2` | Kapasitas / Isi per Box | Nilai default dari master item / input |
+| `QTY` | Total Satuan Produk | $\text{QTY1} \times \text{QTY2}$ |
+| `QTYR` | Total Berat (KG) | Berat item $\times$ QTY |
+
+---
+
+## 📂 Struktur Modul Utama
+
+```
+app/
+├── Console/Commands/       # Command import batch CSV/data legacy
+├── Http/Controllers/       # Controller Collie, SPPB, Report, Dashboard, Auth
+├── Models/                 # CollieSppb, Distributor, OttoMasterStock, SmOracle, User
+database/
+├── migrations/             # Migrasi schema tabel collie, sppb, ekspedisi, distributor
+├── seeders/                # Seeder database awal
+resources/views/
+├── auth/                   # Tampilan login & autentikasi
+├── collie/                 # Form & daftar data Collie
+├── sppb/                   # Manajemen SPPB & Dokumen Cetak Packing List
+├── dashboard/              # Ringkasan analitik & metrik
+├── report/                 # Laporan logistik
+└── layouts/                # Layout master & komponen navigasi
+```
+
+---
+
+## 📄 Lisensi (License)
+
+Proyek ini dilisensikan di bawah lisensi open-source [MIT License](LICENSE).
