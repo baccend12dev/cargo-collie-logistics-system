@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
+use App\Models\User;
+
 class ProfileController extends Controller
 {
     /**
@@ -17,7 +19,8 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        return view('profile.edit', compact('user'));
+        $allUsers = $user->isSuperUser() ? User::orderBy('name', 'asc')->get() : collect();
+        return view('profile.edit', compact('user', 'allUsers'));
     }
 
     /**

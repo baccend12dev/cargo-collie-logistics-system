@@ -55,6 +55,15 @@ class User extends Authenticatable
     }
 
     /**
+     * Cek apakah pengguna memiliki peran / role Super User.
+     */
+    public function isSuperUser(): bool
+    {
+        $role = strtolower(trim($this->role ?? ''));
+        return in_array($role, ['super user', 'superuser', 'super admin', 'superadmin']) || str_contains($role, 'super');
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

@@ -9,6 +9,7 @@ use App\Http\Controllers\SppbController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DistributorController;
+use App\Http\Controllers\UserController;
 
 // Rute Autentikasi (Tamu / Guest)
 Route::middleware('guest')->group(function () {
@@ -30,6 +31,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    // Manajemen Pengguna (Khusus Super User)
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 
     // Modul Collie
     Route::get('/collie', [CollieController::class, 'index'])->name('collie.index');
