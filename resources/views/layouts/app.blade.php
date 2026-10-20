@@ -138,25 +138,17 @@
                         <i class="fa-solid fa-chart-column text-sm"></i>
                         <span class="tracking-wider uppercase">REPORT</span>
                     </a>
+
+                    <!-- 5. DISTRIBUTOR (Master Data) -->
+                    <a href="{{ route('distributor.index') }}" 
+                       class="px-4 py-2 rounded-lg font-bold text-xs flex items-center space-x-2 transition-all duration-200 {{ request()->routeIs('distributor.*') ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md shadow-sky-500/30 ring-1 ring-sky-300/40' : 'text-slate-300 hover:text-white hover:bg-white/5' }}">
+                        <i class="fa-solid fa-address-book text-sm"></i>
+                        <span class="tracking-wider uppercase">DISTRIBUTOR</span>
+                    </a>
                 </nav>
 
                 <!-- Sisi Kanan: Filter Periode Bulan & Akun -->
-                <div class="flex items-center space-x-3">
-                    <!-- Dropdown Periode Bulan -->
-                    <div class="flex items-center bg-slate-800/70 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 shadow-sm">
-                        <i class="fa-regular fa-calendar-days text-sky-400 mr-2"></i>
-                        <span class="font-medium text-slate-400 mr-1.5">Bulan:</span>
-                        <select id="header-period-select" class="bg-transparent font-semibold text-white focus:outline-none cursor-pointer">
-                            <option value="10-2026" selected class="bg-slate-900 text-white">Oct-2026</option>
-                            <option value="09-2026" class="bg-slate-900 text-white">Sep-2026</option>
-                            <option value="08-2026" class="bg-slate-900 text-white">Aug-2026</option>
-                            <option value="07-2026" class="bg-slate-900 text-white">Jul-2026</option>
-                        </select>
-                    </div>
-
-                    <!-- Divider -->
-                    <div class="h-6 w-px bg-slate-700/80"></div>
-
+                <div class="flex items-center space-x-4">
                     <!-- Profil Pengguna / Foto User & Logout Dropdown -->
                     @auth
                     <div class="relative" id="user-menu-container">

@@ -12,13 +12,15 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $response = $this->get('/');
-        $response->assertRedirect('/collie');
+        $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
 
-        $collieResponse = $this->get('/collie');
+        $response = $this->actingAs($user)->get('/');
+        $response->assertStatus(200);
+
+        $collieResponse = $this->actingAs($user)->get('/collie');
         $collieResponse->assertStatus(200);
 
-        $sppbResponse = $this->get('/sppb');
+        $sppbResponse = $this->actingAs($user)->get('/sppb');
         $sppbResponse->assertStatus(200);
     }
 }

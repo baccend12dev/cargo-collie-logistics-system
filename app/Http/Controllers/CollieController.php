@@ -164,14 +164,32 @@ class CollieController extends Controller
         ]);
 
         // Perhitungan QTY otomatis jika tidak diisi manual
-        $qty1 = $validated['qty1'] ?? 1;
-        $qty2 = $validated['qty2'] ?? 1;
+        $qty1 = (int)($validated['qty1'] ?? 1);
+        $qty2 = (int)($validated['qty2'] ?? 1);
         $validated['qty'] = $validated['qty'] ?? ($qty1 * $qty2);
 
-        // Jika AD dan JUCOL diisi tapi no_col kosong
-        if (empty($validated['no_col']) && !empty($validated['ad'])) {
-            $ad = $validated['ad'];
-            $jucol = $validated['jucol'] ?? $ad;
+        $noPl = $validated['no_pl'] ?? null;
+        if (empty($validated['ad']) || empty($validated['jucol'])) {
+            // Hitung otomatis nomor collie berikutnya berdasarkan nomor koli terakhir (last jucol)
+            $existingCollies = CollieSppb::where('no_pl', $noPl)->get();
+            $maxJucol = 0;
+            foreach ($existingCollies as $item) {
+                if (!empty($item->jucol) && (int)$item->jucol > $maxJucol) {
+                    $maxJucol = (int)$item->jucol;
+                } elseif (!empty($item->no_col)) {
+                    $parts = explode('-', (string)$item->no_col);
+                    $val = (int)end($parts);
+                    if ($val > $maxJucol) $maxJucol = $val;
+                }
+            }
+            $ad = $maxJucol + 1;
+            $jucol = $ad + max(1, $qty1) - 1;
+            $validated['ad'] = $ad;
+            $validated['jucol'] = $jucol;
+            $validated['no_col'] = ($ad == $jucol) ? (string)$ad : "{$ad}-{$jucol}";
+        } else {
+            $ad = (int)$validated['ad'];
+            $jucol = (int)($validated['jucol'] ?? $ad);
             $validated['no_col'] = ($ad == $jucol) ? (string)$ad : "{$ad}-{$jucol}";
         }
 
@@ -237,12 +255,25 @@ class CollieController extends Controller
                 ->map(fn($group) => $group->first());
         }
 
+        // Hitung nomor collie tertinggi yang sudah ada pada No. PL ini
+        $maxJucol = 0;
+        foreach ($items as $c) {
+            if (!empty($c->jucol) && (int)$c->jucol > $maxJucol) {
+                $maxJucol = (int)$c->jucol;
+            } elseif (!empty($c->no_col)) {
+                $parts = explode('-', (string)$c->no_col);
+                $val = (int)end($parts);
+                if ($val > $maxJucol) $maxJucol = $val;
+            }
+        }
+
         return response()->json([
             'success'     => true,
             'no_pl'       => $noPl,
             'tgl_col'     => $tglCol,
             'total_koli'  => $items->sum('qty1'),
             'total_berat' => round($items->sum('qtyr'), 1),
+            'last_jucol'  => $maxJucol,
             'items'       => $items->map(function ($c) use ($stockMap) {
                 $stock = $stockMap->get(strtoupper(trim($c->code)));
                 return [

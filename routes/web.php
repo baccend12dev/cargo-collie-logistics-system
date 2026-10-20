@@ -8,6 +8,7 @@ use App\Http\Controllers\CollieController;
 use App\Http\Controllers\SppbController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DistributorController;
 
 // Rute Autentikasi (Tamu / Guest)
 Route::middleware('guest')->group(function () {
@@ -39,6 +40,12 @@ Route::middleware('auth')->group(function () {
     // Modul SPPB
     Route::get('/sppb', [SppbController::class, 'index'])->name('sppb.index');
     Route::post('/sppb', [SppbController::class, 'store'])->name('sppb.store');
+
+    // Modul Master Distributor
+    Route::get('/distributor', [DistributorController::class, 'index'])->name('distributor.index');
+    Route::post('/distributor', [DistributorController::class, 'store'])->name('distributor.store');
+    Route::put('/distributor/{id}', [DistributorController::class, 'update'])->name('distributor.update');
+    Route::delete('/distributor/{id}', [DistributorController::class, 'destroy'])->name('distributor.destroy');
 
     // API Helper
     Route::get('/api/pl-collies', [CollieController::class, 'getPlCollies'])->name('api.pl-collies');

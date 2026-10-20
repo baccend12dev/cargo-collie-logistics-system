@@ -337,38 +337,40 @@
                         </div>
                     </div>
 
-                    <!-- Baris 2: Qty1, Qty2, Total Qty, Berat, dan Simpan -->
+                    <!-- Baris 2: No Collie (Otomatis), Qty1, Qty2, Total Qty, Berat, dan Simpan -->
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-end text-xs font-semibold pt-1">
-                        <!-- Rentang Collie: AD & JUCOL -->
+                        <!-- Tampilan No. Collie (Otomatis dari Qty1) -->
                         <div class="md:col-span-3">
-                            <label class="block text-sky-200 mb-1 text-[11px]">No. Collie (AD s/d Jucol)</label>
-                            <div class="flex items-center space-x-1">
-                                <input type="number" 
-                                       name="ad" 
-                                       id="modal_input_ad" 
-                                       placeholder="AD (90)" 
-                                       oninput="kalkulasiNoCollieModal()" 
-                                       onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('modal_input_qty1').focus();document.getElementById('modal_input_qty1').select();}"
-                                       class="w-full px-2 py-1.5 rounded-lg bg-white text-slate-900 font-bold text-center focus:ring-2 focus:ring-sky-400">
-                                <span class="text-sky-300 font-bold">-</span>
-                                <input type="number" 
-                                       name="jucol" 
-                                       id="modal_input_jucol" 
-                                       placeholder="Jucol" 
-                                       oninput="kalkulasiNoCollieModal()" 
-                                       onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('modal_input_qty1').focus();document.getElementById('modal_input_qty1').select();}"
-                                       class="w-full px-2 py-1.5 rounded-lg bg-white text-slate-900 font-bold text-center focus:ring-2 focus:ring-sky-400">
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="text-sky-200 text-[11px] font-bold">No. Collie</label>
+                                <span class="text-[10px] text-amber-300 font-mono font-bold" id="modal_collie_calc_info">(Auto dari Qty1)</span>
+                            </div>
+                            <div class="relative flex items-center">
+                                <input type="text" 
+                                       name="no_col" 
+                                       id="modal_input_no_col" 
+                                       placeholder="1-80" 
+                                       readonly 
+                                       tabindex="-1"
+                                       title="Nomor Collie otomatis dihitung: (No. Terakhir + 1) s/d (Awal + Qty1 - 1)"
+                                       class="w-full px-3 py-1.5 rounded-lg bg-slate-950/80 text-amber-300 font-black text-center text-sm tracking-wider border border-amber-400/50 shadow-inner select-none font-mono">
+                                <!-- Hidden input untuk nilai ad dan jucol terhitung -->
+                                <input type="hidden" name="ad" id="modal_input_ad" value="1">
+                                <input type="hidden" name="jucol" id="modal_input_jucol" value="1">
                             </div>
                         </div>
 
                         <!-- Qty1 -->
                         <div class="md:col-span-2">
-                            <label class="block text-sky-200 mb-1 text-[11px]">Qty1</label>
+                            <label class="block text-sky-200 mb-1 text-[11px] font-bold">
+                                Qty1 <span class="text-amber-300">(Koli)</span>
+                            </label>
                             <input type="number" 
                                    name="qty1" 
                                    id="modal_input_qty1" 
-                                   placeholder="12" 
-                                   oninput="kalkulasiTotalQtyModal()" 
+                                   placeholder="1" 
+                                   min="1"
+                                   oninput="onModalQty1Change()" 
                                    onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('modal_input_qty2').focus();document.getElementById('modal_input_qty2').select();}"
                                    required 
                                    class="w-full px-2 py-1.5 rounded-lg bg-white text-slate-900 font-bold text-center focus:ring-2 focus:ring-sky-400">
@@ -668,10 +670,12 @@
 <script>
     let hasAddedNewItem = false;
     let searchTimeout = null;
+    let currentPlLastJucol = 0;
 
     function openModalInput() {
         document.getElementById('modal-input-collie').classList.remove('hidden');
         hasAddedNewItem = false;
+        currentPlLastJucol = 0;
         const currentPl = document.getElementById('modal_no_pl').value.trim();
         const currentTgl = document.getElementById('modal_tgl_col').value;
         if (currentPl) {
@@ -709,13 +713,38 @@
         document.getElementById('modal-print-preview').classList.add('hidden');
     }
 
+    // Dipanggil saat input Qty1 berubah di modal
+    function onModalQty1Change() {
+        kalkulasiNoCollieModal();
+        kalkulasiTotalQtyModal();
+    }
+
+    // Perhitungan otomatis No. Collie (AD s/d JUCOL) berdasarkan QTY1 dan nomor koli terakhir
     function kalkulasiNoCollieModal() {
-        const ad = parseInt(document.getElementById('modal_input_ad').value) || 0;
-        const jucol = parseInt(document.getElementById('modal_input_jucol').value) || 0;
-        if (ad > 0 && jucol >= ad) {
-            const countBox = jucol - ad + 1;
-            document.getElementById('modal_input_qty1').value = countBox;
-            kalkulasiTotalQtyModal();
+        const q1Input = document.getElementById('modal_input_qty1');
+        const q1 = q1Input ? parseInt(q1Input.value) : 0;
+        const startNo = (currentPlLastJucol > 0) ? (currentPlLastJucol + 1) : 1;
+
+        const adInput = document.getElementById('modal_input_ad');
+        const jucolInput = document.getElementById('modal_input_jucol');
+        const noColInput = document.getElementById('modal_input_no_col');
+        const infoEl = document.getElementById('modal_collie_calc_info');
+
+        if (q1 > 0) {
+            const ad = startNo;
+            const jucol = ad + q1 - 1;
+            const noColStr = (ad === jucol) ? String(ad) : `${ad}-${jucol}`;
+
+            if (adInput) adInput.value = ad;
+            if (jucolInput) jucolInput.value = jucol;
+            if (noColInput) noColInput.value = noColStr;
+            if (infoEl) infoEl.textContent = (ad === jucol) ? `(Koli #${ad})` : `(#${ad} s/d #${jucol})`;
+        } else {
+            // Belum isi Qty1, preview nomor koli awal berikutnya
+            if (adInput) adInput.value = startNo;
+            if (jucolInput) jucolInput.value = startNo;
+            if (noColInput) noColInput.value = String(startNo);
+            if (infoEl) infoEl.textContent = `(Mulai dari #${startNo})`;
         }
     }
 
@@ -888,13 +917,8 @@
      * Memindahkan fokus ke field input berikutnya setelah kode barang ditemukan
      */
     function focusNextField() {
-        const adInput = document.getElementById('modal_input_ad');
         const qty1Input = document.getElementById('modal_input_qty1');
-
-        if (adInput && (!adInput.value || adInput.value === '0')) {
-            adInput.focus();
-            adInput.select();
-        } else if (qty1Input) {
+        if (qty1Input) {
             qty1Input.focus();
             qty1Input.select();
         }
@@ -910,6 +934,8 @@
             renderModalTable([]);
             document.getElementById('modal_counter_koli').textContent = '0';
             document.getElementById('modal_counter_berat').textContent = '0.0';
+            currentPlLastJucol = 0;
+            kalkulasiNoCollieModal();
             return;
         }
 
@@ -930,23 +956,26 @@
                     document.getElementById('modal_counter_koli').textContent = parseNum(data.total_koli).toLocaleString();
                     document.getElementById('modal_counter_berat').textContent = parseNum(data.total_berat).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1});
 
-                    // Sarankan nomor AD berikutnya otomatis (jika ada data sebelumnya pada No. PL dan Tanggal ini)
+                    // Ambil nomor jucol tertinggi yang sudah diinput untuk No. PL ini
+                    let maxJucol = 0;
                     if (data.items && data.items.length > 0) {
-                        const lastItem = data.items[data.items.length - 1];
-                        if (lastItem.ad) {
-                            let nextAd = parseInt(lastItem.ad) + 1;
-                            if (lastItem.no_col && String(lastItem.no_col).includes('-')) {
-                                const parts = String(lastItem.no_col).split('-');
-                                nextAd = parseInt(parts[1]) + 1;
+                        data.items.forEach(it => {
+                            let j = parseInt(it.jucol) || 0;
+                            if (!j && it.no_col) {
+                                const parts = String(it.no_col).split('-');
+                                j = parseInt(parts[parts.length - 1]) || 0;
                             }
-                            if (!isNaN(nextAd)) {
-                                document.getElementById('modal_input_ad').value = nextAd;
-                            }
-                        }
-                    } else {
-                        // Jika kosong pada tanggal ini, set nomor AD default ke 1
-                        document.getElementById('modal_input_ad').value = '1';
+                            if (j > maxJucol) maxJucol = j;
+                        });
                     }
+                    if (typeof data.last_jucol !== 'undefined' && data.last_jucol !== null) {
+                        currentPlLastJucol = Math.max(parseInt(data.last_jucol) || 0, maxJucol);
+                    } else {
+                        currentPlLastJucol = maxJucol;
+                    }
+
+                    // Sinkronkan tampilan nomor koli awal/preview
+                    kalkulasiNoCollieModal();
                 }
             })
             .catch(err => console.error(err));
@@ -1032,7 +1061,6 @@
                 const statusBadge = document.getElementById('modal_item_status');
                 if (statusBadge) statusBadge.classList.add('hidden');
 
-                document.getElementById('modal_input_jucol').value = '';
                 document.getElementById('modal_input_qty1').value = '';
                 document.getElementById('modal_input_qty2').value = '';
                 document.getElementById('modal_input_total_qty').value = '';
@@ -1373,6 +1401,24 @@
 
         const qtyInput = row.querySelector('[data-field="qty"]');
         if (qtyInput) qtyInput.value = q1 * q2;
+
+        // Jika perubahan terjadi pada QTY1, sesuaikan JUCOL dan NO_COL baris tersebut secara otomatis
+        if (input.getAttribute('data-field') === 'qty1' && q1 > 0) {
+            const adInput = row.querySelector('[data-field="ad"]');
+            const jucolInput = row.querySelector('[data-field="jucol"]');
+            const noColInput = row.querySelector('[data-field="no_col"]');
+            
+            let ad = parseInt(adInput?.value) || 0;
+            if (ad <= 0) {
+                const prevRow = row.previousElementSibling;
+                const prevJucol = prevRow ? (parseInt(prevRow.querySelector('[data-field="jucol"]')?.value) || 0) : 0;
+                ad = prevJucol + 1;
+                if (adInput) adInput.value = ad;
+            }
+            const jucol = ad + q1 - 1;
+            if (jucolInput) jucolInput.value = jucol;
+            if (noColInput) noColInput.value = (ad === jucol) ? String(ad) : `${ad}-${jucol}`;
+        }
 
         recalcGridSummary();
     }

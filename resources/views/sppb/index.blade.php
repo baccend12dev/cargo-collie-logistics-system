@@ -264,8 +264,8 @@
                                     <span>Kepada</span>
                                     <span class="text-amber-400 font-bold">*</span>
                                 </label>
-                                <div class="flex-1">
-                                    <select id="vb6_select_distributor" onchange="onSelectDistributor(this)" class="w-full px-2.5 py-1.5 rounded-lg bg-white text-slate-900 font-semibold text-xs border border-slate-300 focus:ring-2 focus:ring-sky-300 shadow-xs">
+                                <div class="flex-1 flex items-center space-x-1.5">
+                                    <select id="vb6_select_distributor" onchange="onSelectDistributor(this)" class="flex-1 px-2.5 py-1.5 rounded-lg bg-white text-slate-900 font-semibold text-xs border border-slate-300 focus:ring-2 focus:ring-sky-300 shadow-xs">
                                         <option value="">-- Pilih Distributor --</option>
                                         @foreach($distributorList as $dist)
                                             @php
@@ -284,6 +284,10 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                    <a href="{{ route('distributor.index') }}" target="_blank" title="Buka Master Distributor (Tambah / Edit Data)" class="px-2.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-bold transition shadow-xs flex items-center space-x-1 shrink-0">
+                                        <i class="fa-solid fa-address-book"></i>
+                                        <span class="hidden sm:inline">Master</span>
+                                    </a>
                                 </div>
                             </div>
 

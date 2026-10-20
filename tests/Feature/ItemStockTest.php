@@ -11,7 +11,8 @@ class ItemStockTest extends TestCase
      */
     public function test_can_lookup_item_by_code(): void
     {
-        $response = $this->getJson('/api/item-stock/INV095');
+        $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
+        $response = $this->actingAs($user)->getJson('/api/item-stock/INV095');
 
         $response->assertStatus(200)
                  ->assertJson([
@@ -28,7 +29,8 @@ class ItemStockTest extends TestCase
      */
     public function test_returns_404_when_item_not_found(): void
     {
-        $response = $this->getJson('/api/item-stock/KODETIDAKADA999');
+        $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
+        $response = $this->actingAs($user)->getJson('/api/item-stock/KODETIDAKADA999');
 
         $response->assertStatus(404)
                  ->assertJson([
@@ -41,8 +43,9 @@ class ItemStockTest extends TestCase
      */
     public function test_pl_collies_returns_empty_when_no_items_on_selected_date(): void
     {
+        $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
         // Tanggal yang tidak memiliki data untuk 001/PL harus mengembalikan array kosong
-        $response = $this->getJson('/api/pl-collies?no_pl=001/PL&tgl_col=2026-10-12');
+        $response = $this->actingAs($user)->getJson('/api/pl-collies?no_pl=001/PL&tgl_col=2026-10-12');
 
         $response->assertStatus(200)
                  ->assertJson([
@@ -57,8 +60,9 @@ class ItemStockTest extends TestCase
      */
     public function test_pl_collies_returns_items_when_matching_date(): void
     {
+        $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
         // 001/PL ada pada tanggal 2026-10-06
-        $response = $this->getJson('/api/pl-collies?no_pl=001/PL&tgl_col=2026-10-06');
+        $response = $this->actingAs($user)->getJson('/api/pl-collies?no_pl=001/PL&tgl_col=2026-10-06');
 
         $response->assertStatus(200)
                  ->assertJson([
