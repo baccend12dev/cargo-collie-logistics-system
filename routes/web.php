@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
     // Halaman Utama: Dashboard & Grafik
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/report', [ReportController::class, 'index'])->name('report.index');
+    Route::get('/report/export-excel', [ReportController::class, 'exportExcel'])->name('report.export-excel');
 
     // Pengaturan Profil & Ganti Password
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

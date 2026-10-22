@@ -98,10 +98,10 @@
                     <span>Cetak</span>
                 </button>
 
-                <button type="button" onclick="exportReportToCsv()" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-xs transition flex items-center space-x-1 active:scale-95">
-                    <i class="fa-solid fa-file-excel text-[11px]"></i>
-                    <span>Export CSV</span>
-                </button>
+                <a href="{{ route('report.export-excel', request()->query()) }}" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-xs transition flex items-center space-x-1.5 active:scale-95" title="Export Seluruh Data Hasil Filter ke Format Microsoft Excel (.xlsx)">
+                    <i class="fa-solid fa-file-excel text-[12px] text-emerald-200"></i>
+                    <span>Export Excel</span>
+                </a>
             </div>
         </div>
 
@@ -291,35 +291,5 @@
 @endsection
 
 @push('scripts')
-<script>
-function exportReportToCsv() {
-    const table = document.getElementById("report-table");
-    if (!table) return;
-
-    let csv = [];
-    const rows = table.querySelectorAll("tr");
-
-    for (let i = 0; i < rows.length; i++) {
-        let row = [], cols = rows[i].querySelectorAll("td, th");
-        for (let j = 0; j < cols.length; j++) {
-            if (cols[j].classList.contains('no-print')) continue;
-            let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/(\s\s+)/gm, " ");
-            data = data.replace(/"/g, '""');
-            row.push('"' + data + '"');
-        }
-        if (row.length > 0) {
-            csv.push(row.join(","));
-        }
-    }
-
-    const csvFile = new Blob([csv.join("\n")], { type: "text/csv;charset=utf-8;" });
-    const downloadLink = document.createElement("a");
-    downloadLink.download = "Laporan_Logistik_Collie_SPPB_" + new Date().toISOString().slice(0, 10) + ".csv";
-    downloadLink.href = window.URL.createObjectURL(csvFile);
-    downloadLink.style.display = "none";
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-}
-</script>
+{{-- Script khusus halaman report jika dibutuhkan di masa mendatang --}}
 @endpush

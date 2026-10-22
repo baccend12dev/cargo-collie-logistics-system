@@ -57,11 +57,20 @@ class ReportController extends Controller
         }
 
         if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('no_pl', 'like', "%{$search}%")
-                  ->orWhere('no_sppb', 'like', "%{$search}%")
-                  ->orWhere('ekspedisi', 'like', "%{$search}%")
-                  ->orWhere('customer_name', 'like', "%{$search}%");
+            $isPgsql = DB::connection()->getDriverName() === 'pgsql';
+            $likeOp = $isPgsql ? 'ilike' : 'like';
+
+            $keywords = array_filter(preg_split('/\s+/', $search));
+
+            $query->where(function ($q) use ($keywords, $likeOp) {
+                foreach ($keywords as $word) {
+                    $q->where(function ($sub) use ($word, $likeOp) {
+                        $sub->where('no_pl', $likeOp, "%{$word}%")
+                            ->orWhere('no_sppb', $likeOp, "%{$word}%")
+                            ->orWhere('ekspedisi', $likeOp, "%{$word}%")
+                            ->orWhere('customer_name', $likeOp, "%{$word}%");
+                    });
+                }
             });
         }
 
@@ -103,5 +112,24 @@ class ReportController extends Controller
             'ekspedisiOptions',
             'cabangOptions'
         ));
+    }
+
+    /**
+     * Export data rekapitulasi laporan ke file Microsoft Excel (.xlsx).
+     */
+    public function exportExcel(Request $request)
+    {
+        $filters = [
+            'start_date' => $request->get('start_date', date('Y-01-01')),
+            'end_date'   => $request->get('end_date', date('Y-m-d')),
+            'cabang'     => $request->get('cabang'),
+            'ekspedisi'  => $request->get('ekspedisi'),
+            'status'     => $request->get('status'),
+            'search'     => $request->get('search'),
+        ];
+
+        $filename = 'Laporan_Logistik_Collie_SPPB_' . date('Ymd_His') . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\LogisticsReportExport($filters), $filename);
     }
 }
