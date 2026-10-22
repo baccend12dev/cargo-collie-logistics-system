@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Distributor;
 
 class DistributorController extends Controller
@@ -17,14 +18,24 @@ class DistributorController extends Controller
         $query = Distributor::query();
 
         if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('nama', 'like', "%{$search}%")
-                  ->orWhere('kota', 'like', "%{$search}%")
-                  ->orWhere('alamat1', 'like', "%{$search}%")
-                  ->orWhere('alamat2', 'like', "%{$search}%")
-                  ->orWhere('alamat3', 'like', "%{$search}%")
-                  ->orWhere('search_key', 'like', "%{$search}%")
-                  ->orWhere('telp', 'like', "%{$search}%");
+            $isPgsql = DB::connection()->getDriverName() === 'pgsql';
+            $likeOp = $isPgsql ? 'ilike' : 'like';
+
+            $keywords = array_filter(preg_split('/\s+/', $search));
+
+            $query->where(function ($q) use ($keywords, $likeOp) {
+                foreach ($keywords as $word) {
+                    $q->where(function ($sub) use ($word, $likeOp) {
+                        $sub->where('nama', $likeOp, "%{$word}%")
+                            ->orWhere('kota', $likeOp, "%{$word}%")
+                            ->orWhere('alamat1', $likeOp, "%{$word}%")
+                            ->orWhere('alamat2', $likeOp, "%{$word}%")
+                            ->orWhere('alamat3', $likeOp, "%{$word}%")
+                            ->orWhere('search_key', $likeOp, "%{$word}%")
+                            ->orWhere('searchkey', $likeOp, "%{$word}%")
+                            ->orWhere('telp', $likeOp, "%{$word}%");
+                    });
+                }
             });
         }
 
@@ -53,7 +64,9 @@ class DistributorController extends Controller
             'search_key' => 'nullable|string|max:50',
         ]);
 
-        $validated['searchkey'] = $validated['search_key'] ?? null;
+        $searchKeyVal = $validated['search_key'] ?? null;
+        $validated['search_key'] = $searchKeyVal;
+        $validated['searchkey']  = $searchKeyVal;
 
         Distributor::create($validated);
 
@@ -78,7 +91,9 @@ class DistributorController extends Controller
             'search_key' => 'nullable|string|max:50',
         ]);
 
-        $validated['searchkey'] = $validated['search_key'] ?? null;
+        $searchKeyVal = $validated['search_key'] ?? null;
+        $validated['search_key'] = $searchKeyVal;
+        $validated['searchkey']  = $searchKeyVal;
 
         $distributor->update($validated);
 

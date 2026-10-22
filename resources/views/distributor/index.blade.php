@@ -136,9 +136,10 @@
 
                             <!-- Search Key -->
                             <td class="py-2 px-3">
-                                @if(!empty($dist->search_key))
+                                @php $displayKey = $dist->search_key ?: $dist->searchkey; @endphp
+                                @if(!empty($displayKey))
                                     <span class="inline-block px-2 py-0.5 rounded font-mono font-bold text-[11px] bg-slate-100 text-slate-800 border border-slate-300">
-                                        {{ $dist->search_key }}
+                                        {{ $displayKey }}
                                     </span>
                                 @else
                                     <span class="text-slate-400 italic text-[11px]">-</span>
