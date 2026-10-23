@@ -204,9 +204,14 @@
                             </td>
                             <td class="py-1 px-3 font-bold text-sky-800">
                                 @if(!empty($row->no_sppb))
-                                    <a href="{{ route('sppb.index') }}?search={{ urlencode($row->no_sppb) }}" class="hover:text-sky-600 hover:underline">
-                                        {{ $row->no_sppb }}
-                                    </a>
+                                    <div class="flex items-center space-x-1.5">
+                                        <a href="{{ route('sppb.index') }}?search={{ urlencode($row->no_sppb) }}" class="hover:text-sky-600 hover:underline" title="Buka di Monitoring SPPB">
+                                            {{ $row->no_sppb }}
+                                        </a>
+                                        <a href="{{ route('sppb.print', ['no_pl' => $row->no_pl, 'tgl_col' => $row->tgl_col ? \Carbon\Carbon::parse($row->tgl_col)->format('Y-m-d') : '']) }}" target="_blank" class="no-print text-slate-400 hover:text-sky-600 transition" title="Cetak SPPB (Ukuran 16x20cm)">
+                                            <i class="fa-solid fa-print text-[11px]"></i>
+                                        </a>
+                                    </div>
                                 @else
                                     <span class="text-slate-300">-</span>
                                 @endif
