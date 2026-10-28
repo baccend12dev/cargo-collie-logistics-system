@@ -19,56 +19,29 @@
     <!-- ============================================================== -->
     <!-- CARD TOOLBAR & FILTER MONITORING PL & SPPB                     -->
     <!-- ============================================================== -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200/90 p-3.5 sm:p-4">
-        
-        <!-- Header Judul Modul & Ringkasan Status -->
-        <div class="flex flex-wrap items-center justify-between pb-3 mb-3 border-b border-slate-100 gap-2">
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200/90 p-2.5 px-3">
+        <div class="flex flex-wrap items-center justify-between gap-2.5 text-xs">
+            
+            <!-- Sisi Kiri: Judul Modul -->
             <div class="flex items-center space-x-2.5">
-                <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-sky-100 text-sky-700 font-bold">
+                <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-sky-100 text-sky-700 font-bold shrink-0">
                     <i class="fa-solid fa-truck-ramp-box"></i>
                 </span>
                 <div>
-                    <h1 class="text-base font-bold text-slate-800 leading-none">PENCETAKKAN SURAT PENGANTAR PENGIRIMAN BARANG (SPPB)</h1>
+                    <h1 class="text-sm font-bold text-slate-800 leading-tight">PENCETAKKAN SURAT PENGANTAR PENGIRIMAN BARANG (SPPB)</h1>
                     <span class="text-[11px] text-slate-500 font-medium">Pengelolaan Surat Jalan Pengiriman Berdasarkan Packing List & Surat Muat</span>
                 </div>
             </div>
 
-            <!-- Ringkasan Statistik Status -->
-            <div class="flex items-center space-x-2">
-                <div class="flex items-center space-x-2 bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg text-xs">
-                    <span class="text-slate-600">Total PL:</span>
-                    <strong class="text-slate-900">{{ $totalPl }}</strong>
-                </div>
-
-                <div class="flex items-center space-x-2 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-lg text-xs">
-                    <span class="text-emerald-700 font-medium">Sudah SPPB:</span>
-                    <strong class="text-emerald-900">{{ $plSudahSppb }}</strong>
-                </div>
-
-                @if($plBelumSppb > 0)
-                <div class="flex items-center space-x-2 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg text-xs animate-pulse">
-                    <span class="text-amber-700 font-medium">Belum SPPB:</span>
-                    <strong class="text-amber-900">{{ $plBelumSppb }}</strong>
-                </div>
-                @endif
-
-                <a href="{{ route('sppb.index') }}" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center space-x-1.5 border border-slate-200 transition">
-                    <i class="fa-solid fa-rotate text-slate-500"></i>
-                    <span>Refresh</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Filter Grid: Status, Cabang, Cari -->
-        <form method="GET" action="{{ route('sppb.index') }}" class="grid grid-cols-1 lg:grid-cols-12 gap-3 text-xs">
-            <div class="lg:col-span-8 flex flex-wrap items-center gap-2">
+            <!-- Sisi Kanan: Filter Status, Cabang, Cari Cepat & Refresh -->
+            <form method="GET" action="{{ route('sppb.index') }}" class="flex flex-wrap items-center gap-2">
                 
                 <!-- Filter Status SPPB -->
                 <div class="flex items-center space-x-1.5">
                     <label class="text-slate-600 font-medium">Status :</label>
-                    <select name="status" onchange="this.form.submit()" class="px-2.5 py-1.5 border border-slate-300 rounded-lg bg-slate-50 focus:bg-white text-xs font-medium">
+                    <select name="status" onchange="this.form.submit()" class="px-2 py-1 border border-slate-300 rounded-lg bg-slate-50 focus:bg-white text-xs font-medium">
                         <option value="">Semua Status</option>
-                        <option value="belum" {{ request('status') == 'belum' ? 'selected' : '' }}>⏳ Belum Terbit SPPB (Draft)</option>
+                        <option value="belum" {{ request('status') == 'belum' ? 'selected' : '' }}>⏳ Belum Terbit SPPB</option>
                         <option value="sudah" {{ request('status') == 'sudah' ? 'selected' : '' }}>✅ Sudah Terbit SPPB</option>
                     </select>
                 </div>
@@ -76,25 +49,30 @@
                 <!-- Filter Cabang -->
                 <div class="flex items-center space-x-1.5">
                     <label class="text-slate-600 font-medium">Cabang :</label>
-                    <select name="cabang" onchange="this.form.submit()" class="px-2.5 py-1.5 border border-slate-300 rounded-lg bg-slate-50 focus:bg-white text-xs font-medium">
+                    <select name="cabang" onchange="this.form.submit()" class="px-2 py-1 border border-slate-300 rounded-lg bg-slate-50 focus:bg-white text-xs font-medium">
                         <option value="">Semua Cabang</option>
                         <option value="JKT0" {{ request('cabang') == 'JKT0' ? 'selected' : '' }}>JKT0 - Jakarta</option>
                         <option value="SBY0" {{ request('cabang') == 'SBY0' ? 'selected' : '' }}>SBY0 - Surabaya</option>
                     </select>
                 </div>
 
-            </div>
+                <!-- Cari Cepat -->
+                <div class="flex items-center space-x-1">
+                    <label class="text-slate-600 font-medium">Cari :</label>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="No. PL / SPPB / Ekspedisi..." class="px-2 py-1 border border-slate-300 rounded-lg w-44 bg-slate-50 focus:bg-white text-xs">
+                    <button type="submit" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-900 text-white rounded-lg font-semibold transition" title="Cari">
+                        <i class="fa-solid fa-magnifying-glass text-[10px]"></i>
+                    </button>
+                </div>
 
-            <!-- Cari Cepat -->
-            <div class="lg:col-span-4 flex items-center justify-end space-x-1.5">
-                <label class="text-slate-600 font-medium">Cari :</label>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="No. PL / No. SPPB / Ekspedisi..." class="px-2.5 py-1.5 border border-slate-300 rounded-lg w-56 bg-slate-50 focus:bg-white text-xs">
-                <button type="submit" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg font-semibold transition">
-                    <i class="fa-solid fa-magnifying-glass text-[10px]"></i>
-                </button>
-            </div>
-        </form>
+                <!-- Refresh -->
+                <a href="{{ route('sppb.index') }}" title="Refresh Halaman" class="p-1 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold flex items-center transition border border-slate-200">
+                    <i class="fa-solid fa-rotate text-slate-500"></i>
+                </a>
 
+            </form>
+
+        </div>
     </div>
 
     <!-- ============================================================== -->
@@ -194,13 +172,27 @@
             </table>
         </div>
 
-        <div class="bg-slate-50 border-t border-slate-200 p-3 flex items-center justify-between text-xs">
-            <span class="text-slate-500 font-medium">
-                Menampilkan {{ $plList->count() }} data Packing List
-            </span>
-            @if($plList->hasPages())
-                {{ $plList->links('pagination::simple-tailwind') }}
-            @endif
+        <!-- Action Bar Bawah & Ringkasan Statistik Status (Sesuai Layout Collie) -->
+        <div class="bg-slate-50 border-t border-slate-200 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+            
+            <div class="flex items-center space-x-3 text-xs text-slate-500">
+                <span>Total PL: <strong class="text-slate-800 font-bold font-mono">{{ number_format($totalPl) }}</strong></span>
+                <span class="text-slate-300">|</span>
+                <span>Sudah SPPB: <strong class="text-emerald-700 font-bold font-mono">{{ number_format($plSudahSppb) }}</strong></span>
+                <span class="text-slate-300">|</span>
+                <span>Belum SPPB: <strong class="text-amber-700 font-bold font-mono">{{ number_format($plBelumSppb) }}</strong></span>
+            </div>
+
+            <!-- Pagination Links -->
+            <div class="flex items-center space-x-2 text-xs">
+                @if($plList->hasPages())
+                    <span class="text-slate-500 font-medium">Halaman {{ $plList->currentPage() }} dari {{ $plList->lastPage() }}</span>
+                    {{ $plList->links('pagination::simple-tailwind') }}
+                @else
+                    <span class="text-slate-500 font-medium">Menampilkan {{ $plList->count() }} dari {{ $totalPl }} data</span>
+                @endif
+            </div>
+
         </div>
     </div>
 
