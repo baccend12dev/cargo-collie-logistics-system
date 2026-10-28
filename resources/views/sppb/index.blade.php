@@ -125,7 +125,15 @@
                         <td class="px-3 py-1.5 text-center text-slate-400 font-sans">
                             {{ $plList->firstItem() + $idx }}
                         </td>
-                        <td class="px-3 py-1.5 font-bold text-sky-700 text-sm">{{ $pl->no_pl }}</td>
+                        <td class="px-3 py-1.5 font-bold text-sky-700 text-sm">
+                            <button type="button" 
+                                    onclick="openCollieDetailModal('{{ $pl->no_pl }}', '{{ $pl->tgl_pl ? \Carbon\Carbon::parse($pl->tgl_pl)->format('Y-m-d') : '' }}', '{{ $pl->tgl_pl ? \Carbon\Carbon::parse($pl->tgl_pl)->format('d/m/Y') : '-' }}')"
+                                    class="text-sky-700 hover:text-sky-900 hover:underline inline-flex items-center gap-1.5 font-mono group/btn text-left"
+                                    title="Klik untuk melihat rincian collie {{ $pl->no_pl }} ({{ $pl->tgl_pl ? \Carbon\Carbon::parse($pl->tgl_pl)->format('d/m/Y') : '' }})">
+                                <span>{{ $pl->no_pl }}</span>
+                                <i class="fa-solid fa-circle-info text-[11px] text-sky-400 group-hover/btn:text-sky-600 opacity-70 group-hover/btn:opacity-100 transition"></i>
+                            </button>
+                        </td>
                         <td class="px-3 py-1.5 font-sans">{{ $pl->tgl_pl ? \Carbon\Carbon::parse($pl->tgl_pl)->format('d/m/Y') : '-' }}</td>
                         <td class="px-3 py-1.5 font-sans font-bold">{{ $pl->cab ?: '' }}</td>
                         
@@ -531,6 +539,88 @@
     </div>
 </div>
 
+<!-- ============================================================== -->
+<!-- MODAL: DETAIL RINCIAN COLLIE (DARI COLLIE_SPPBS SESUAI TANGGAL) -->
+<!-- ============================================================== -->
+<div id="modal-collie-detail" class="fixed inset-0 z-50 hidden bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-5xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[90vh]">
+        
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 text-white px-5 py-3.5 flex items-center justify-between border-b border-sky-800/40">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-400">
+                    <i class="fa-solid fa-boxes-stacked text-base"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-bold text-base text-white tracking-wide">Rincian Informasi Collie</h3>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30" id="modal_collie_badge_pl">-</span>
+                    </div>
+                    <div class="text-xs text-slate-300 flex items-center gap-2 mt-0.5">
+                        <span>Tanggal: <strong class="text-amber-300 font-mono" id="modal_collie_badge_tgl">-</strong></span>
+                        <span>&bull;</span>
+                        <span>Tabel Sumber: <code class="text-sky-300 font-mono text-[11px]">collie_sppbs</code></span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" 
+                    onclick="closeCollieDetailModal()"
+                    class="text-slate-400 hover:text-white hover:bg-white/10 w-8 h-8 rounded-lg flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body: Tabel Data Collie -->
+        <div class="p-4 overflow-y-auto flex-1">
+            <div class="overflow-x-auto rounded-xl border border-slate-200">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-800 text-white font-semibold font-mono text-[11px] uppercase tracking-wider">
+                        <tr>
+                            <th class="py-2.5 px-3 text-center w-12 border-r border-slate-700">No.</th>
+                            <th class="py-2.5 px-3 border-r border-slate-700">No. SM</th>
+                            <th class="py-2.5 px-3 border-r border-slate-700 text-center font-bold text-sky-300">No. Col</th>
+                            <th class="py-2.5 px-3 border-r border-slate-700 text-center">AD - JUCOL</th>
+                            <th class="py-2.5 px-3 border-r border-slate-700">Kode</th>
+                            <th class="py-2.5 px-3 border-r border-slate-700">Nama Produk / Barang</th>
+                            <th class="py-2.5 px-3 border-r border-slate-700 text-right">Qty</th>
+                            <th class="py-2.5 px-3 border-r border-slate-700 text-right">Qty1</th>
+                            <th class="py-2.5 px-3 border-r border-slate-700 text-right">Qty2</th>
+                            <th class="py-2.5 px-3 text-right font-bold text-amber-300">QTYR (Kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal_collie_tbody" class="divide-y divide-slate-200 font-mono font-medium text-slate-700">
+                        <!-- Dimuat via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-slate-50 border-t border-slate-200 px-5 py-3 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-4 text-slate-600 font-medium">
+                <span>Total Baris: <strong class="text-slate-900 font-mono" id="modal_collie_total_rows">0</strong></span>
+                <span class="text-slate-300">|</span>
+                <span>Total Koli: <strong class="text-sky-700 font-mono font-bold" id="modal_collie_total_koli">0</strong></span>
+                <span class="text-slate-300">|</span>
+                <span>Total Berat: <strong class="text-amber-700 font-mono font-bold" id="modal_collie_total_berat">0 Kg</strong></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <a id="modal_collie_link_edit" href="#" target="_blank" class="px-3 py-1.5 bg-sky-50 text-sky-700 border border-sky-300 hover:bg-sky-100 rounded-lg font-bold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    <span>Buka di Menu Collie</span>
+                </a>
+                <button type="button" 
+                        onclick="closeCollieDetailModal()"
+                        class="px-4 py-1.5 bg-slate-700 hover:bg-slate-800 text-white rounded-lg font-bold transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -885,6 +975,72 @@
         if (nameInput) nameInput.value = nama;
         if (addrInput) addrInput.value = alamat;
         if (cabangInput && kota) cabangInput.value = kota;
+    }
+
+    // ==============================================================
+    // DETAIL RINCIAN COLLIE MODAL (DARI COLLIE_SPPBS PER NO_PL & TGL)
+    // ==============================================================
+    function openCollieDetailModal(noPl, tglCol = '', tglColFormatted = '') {
+        if (!noPl) return;
+        document.getElementById('modal_collie_badge_pl').textContent = noPl;
+        document.getElementById('modal_collie_badge_tgl').textContent = tglColFormatted || tglCol || '-';
+        document.getElementById('modal_collie_link_edit').href = `{{ url('/collie') }}?search=${encodeURIComponent(noPl)}`;
+        document.getElementById('modal-collie-detail').classList.remove('hidden');
+
+        const tbody = document.getElementById('modal_collie_tbody');
+        tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-slate-400 font-sans italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data rincian collie ${noPl}...</td></tr>`;
+
+        let url = `{{ route('api.pl-collies') }}?no_pl=${encodeURIComponent(noPl)}`;
+        if (tglCol) {
+            url += `&tgl_col=${encodeURIComponent(tglCol)}`;
+        }
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.items && data.items.length > 0) {
+                    renderCollieDetailRows(data.items);
+                    document.getElementById('modal_collie_total_rows').textContent = data.items.length;
+                    document.getElementById('modal_collie_total_koli').textContent = Number(data.total_koli || 0).toLocaleString('id-ID');
+                    document.getElementById('modal_collie_total_berat').textContent = Number(data.total_berat || 0).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' Kg';
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-slate-400 font-sans italic">Tidak ada rincian collie untuk Packing List ${noPl} pada tanggal ini.</td></tr>`;
+                    document.getElementById('modal_collie_total_rows').textContent = '0';
+                    document.getElementById('modal_collie_total_koli').textContent = '0';
+                    document.getElementById('modal_collie_total_berat').textContent = '0 Kg';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-rose-500 font-sans">Gagal memuat rincian data collie.</td></tr>`;
+            });
+    }
+
+    function renderCollieDetailRows(items) {
+        const tbody = document.getElementById('modal_collie_tbody');
+        tbody.innerHTML = '';
+        items.forEach((item, idx) => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-sky-50/70 transition-colors';
+            const adJucol = (item.ad !== null && item.ad !== '' && item.jucol !== null && item.jucol !== '') ? `${item.ad} - ${item.jucol}` : '-';
+            tr.innerHTML = `
+                <td class="py-1.5 px-3 text-center text-slate-400 font-sans">${idx + 1}</td>
+                <td class="py-1.5 px-3 font-sans ${item.no_sm ? 'text-slate-900 font-bold' : 'text-slate-400 italic'}">${item.no_sm || '-'}</td>
+                <td class="py-1.5 px-3 text-center font-bold text-slate-900 bg-amber-50/50">${item.no_col || '-'}</td>
+                <td class="py-1.5 px-3 text-center text-slate-600 font-mono">${adJucol}</td>
+                <td class="py-1.5 px-3 font-bold text-emerald-700">${item.code || '-'}</td>
+                <td class="py-1.5 px-3 font-sans text-slate-800 text-[11px] max-w-xs truncate" title="${item.nama || ''}">${item.nama || '-'}</td>
+                <td class="py-1.5 px-3 text-right font-bold text-slate-900">${Number(item.qty || 0).toLocaleString('id-ID')}</td>
+                <td class="py-1.5 px-3 text-right">${item.qty1 || 0}</td>
+                <td class="py-1.5 px-3 text-right">${item.qty2 || 0}</td>
+                <td class="py-1.5 px-3 text-right font-bold text-amber-700">${Number(item.qtyr || 0).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 2 })}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function closeCollieDetailModal() {
+        document.getElementById('modal-collie-detail').classList.add('hidden');
     }
 </script>
 @endpush
