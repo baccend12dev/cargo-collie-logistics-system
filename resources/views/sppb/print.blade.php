@@ -119,8 +119,15 @@
             word-break: break-word;
         }
 
+        .date-label {
+            width: 16mm;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
         .via-label {
-            width: 12mm;
+            width: 16mm;
+            font-weight: bold;
             flex-shrink: 0;
         }
 
@@ -373,6 +380,12 @@
         $totalCollieAll = number_format($header->jumlah ?: $items->sum('qty1'));
         $totalBeratAll  = number_format($header->berat ?: $items->sum('qtyr'), 1);
         $globalRowIndex = 1;
+
+        // Tanggal SPPB
+        $tglSppbRaw = $header->tgl_sppb ?? $header->tgl_col;
+        $tglSppbFormatted = !empty($tglSppbRaw)
+            ? (\Carbon\Carbon::parse($tglSppbRaw)->translatedFormat('d F Y'))
+            : date('d F Y');
     @endphp
 
     @foreach($pages as $pageIndex => $pageItems)
@@ -407,7 +420,7 @@
                     <div class="info-row">
                         <span class="info-label template-static">No. :</span>
                         <span class="info-val" style="font-weight: bold; letter-spacing: 0.5px;">
-                            {{ $header->no_sppb ?? '0348/10/2026' }}
+                            {{ $header->no_sppb ?? '' }}
                         </span>
                     </div>
                     <div class="info-row" style="align-items: flex-start;">
@@ -419,10 +432,16 @@
                     </div>
                 </div>
 
-                <!-- Kolom Kanan: Via & Halaman -->
+                <!-- Kolom Kanan: Tanggal, Via & Halaman -->
                 <div style="padding-left: 5mm;">
                     <div class="info-row">
-                        <span class="via-label template-static">Via :</span>
+                        <span class="date-label template-static">Tanggal :</span>
+                        <span class="info-val" style="font-weight: bold;">
+                            {{ $tglSppbFormatted }}
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="via-label">Via :</span>
                         <span class="info-val" style="font-weight: bold;">
                             {{ $header->ekspedisi ?? 'Tunggal Jaya Expressindo' }}
                         </span>
